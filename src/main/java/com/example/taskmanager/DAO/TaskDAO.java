@@ -3,11 +3,13 @@ package com.example.taskmanager.DAO;
 import com.example.taskmanager.exceptions.InvalidInputException;
 import com.example.taskmanager.model.Task;
 import com.example.taskmanager.utils.DBConnection;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class TaskDAO {
     // Add new task to the database
     public void insertTask(Task task) throws InvalidInputException, SQLException {
@@ -25,7 +27,7 @@ public class TaskDAO {
             statement.setString(3, task.getDescription());
             statement.setString(4, task.getStatus());
             statement.setInt(5, task.getPriority());
-            statement.setString(5, task.getDue_date());
+            statement.setString(5, task.getDueDate());
             statement.setString(5, task.getCreated_at());
             statement.setString(5, task.getUpdated_at());
             statement.setString(5, task.getUpdated_at());
