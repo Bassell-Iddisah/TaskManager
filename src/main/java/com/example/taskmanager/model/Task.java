@@ -9,14 +9,13 @@ public class Task {
     private String DueDate;
     private String created_at;
     private String updated_at;
-    private int user_id;
 
     public Task() {
         // required for form binding
     }
 
     public Task(int id, String title, String description, String status, int priority,
-                String DueDate, String created_at, String updated_at, int user_id) {
+                String DueDate, String created_at, String updated_at) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -25,7 +24,6 @@ public class Task {
         this.DueDate = DueDate;
         this.created_at = created_at;
         this.updated_at = updated_at;
-        this.user_id = user_id;
     }
 
     // Getters
@@ -53,9 +51,6 @@ public class Task {
     public String getUpdated_at() {
         return updated_at;
     }
-    public int getUser_id() {
-        return user_id;
-    }
 
     // Setters
     public void setId(int id) {
@@ -81,8 +76,5 @@ public class Task {
     }
     public void setUpdated_at(String updated_at) {
         this.updated_at = updated_at;
-    }
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
     }
     }

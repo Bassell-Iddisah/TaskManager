@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.*;
 
 @Controller
@@ -27,45 +28,56 @@ public class TaskController {
         return "home";
     }
 
+    // Display all tasks
     @GetMapping("/tasks")
     public String listTasks(Model model) {
-        List<Task> tasks = new ArrayList<>();
         try {
-            tasks = taskDAO.getAllTasks();
+            List<Task> tasks = taskDAO.getAllTasks();
+            model.addAttribute("tasks", tasks);
         } catch (SQLException e) {
-            System.err.println("❌ Error fetching tasks: " + e.getMessage());
+            e.printStackTrace();
+            model.addAttribute("tasks", List.of());
         }
-
-        model.addAttribute("tasks", tasks);
         return "tasks";
     }
 
+    // Show form to create a new task
     @GetMapping("/tasks/new")
     public String showCreateForm(Model model) {
         model.addAttribute("task", new Task());
         return "task_form";
     }
 
+    // Save new task
     @PostMapping("/tasks")
-    public String saveTask(@ModelAttribute("task") Task task) {
-        // Assign an ID manually for now (auto-increment simulation)
-        int nextId = taskList.size() + 1;
-        task.setId(nextId);
-        taskList.add(task);
+    public String saveTask(@ModelAttribute("task") Task task) throws SQLException {
+        String today = LocalDate.now().toString();
+
+        task.setCreated_at(today);
+        task.setUpdated_at(today);
+        try {
+            taskDAO.insertTask(task);
+            System.out.println("Inserted new task");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
         return "redirect:/tasks";
     }
 
     @GetMapping("/tasks/delete/{id}")
     public String deleteTask(@PathVariable("id") int id) {
-        taskList.removeIf(task -> task.getId() == id);
+//        taskList.removeIf(task -> task.getId() == id);
+        System.out.println("Deleting task");
+        taskDAO.deletetask(id);
         return "redirect:/tasks";
     }
 
     @GetMapping("/tasks/edit/{id}")
-    public String showEditForm(@PathVariable("id") int id, Model model) {
+    public String showEditForm(@PathVariable("id") int id, Model model) throws SQLException {
         Task taskToEdit = null;
 
-        for (Task t : taskList) {
+        for (Task t : taskDAO.getAllTasks()) {
             if (t.getId() == id) {
                 taskToEdit = t;
                 break;
@@ -81,19 +93,12 @@ public class TaskController {
 
     @PostMapping("/tasks/edit")
     public String updateTask(@ModelAttribute("task") Task updatedTask) {
-        for (Task t : taskList) {
-            if (t.getId() == updatedTask.getId()) {
-                t.setTitle(updatedTask.getTitle());
-                t.setDescription(updatedTask.getDescription());
-                t.setStatus(updatedTask.getStatus());
-                t.setPriority(updatedTask.getPriority());
-                t.setDueDate(updatedTask.getDueDate());
-                t.setUpdated_at(java.time.LocalDate.now().toString()); // Optional
+        updatedTask.setUpdated_at(java.time.LocalDate.now().toString());
 
-                System.out.println("✏️ Updating task ID: " + updatedTask.getId());
-                break;
-            }
-        }
+        taskDAO.updateTaskDetails(updatedTask.getTitle(), updatedTask.getDescription(), updatedTask.getStatus(), updatedTask.getPriority(), updatedTask.getDueDate(), updatedTask.getUpdated_at(), updatedTask.getId());
+        System.out.println("✏️ Updated task in DB: ID " + updatedTask.getId());
+
         return "redirect:/tasks";
     }
+
 }

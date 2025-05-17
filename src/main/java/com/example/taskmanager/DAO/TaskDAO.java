@@ -17,20 +17,19 @@ public class TaskDAO {
             throw new InvalidInputException("Cannot accept empty field");
         }
 
-        String sql = "INSERT INTO tasks VALUES(?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO tasks (title, description, status, priority, due_date, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            statement.setInt(1, task.getId());
-            statement.setString(2, task.getTitle());
-            statement.setString(3, task.getDescription());
-            statement.setString(4, task.getStatus());
-            statement.setInt(5, task.getPriority());
+            statement.setString(1, task.getTitle());
+            statement.setString(2, task.getDescription());
+            statement.setString(3, task.getStatus());
+            statement.setInt(4, task.getPriority());
             statement.setString(5, task.getDueDate());
-            statement.setString(5, task.getCreated_at());
-            statement.setString(5, task.getUpdated_at());
-            statement.setString(5, task.getUpdated_at());
+            statement.setString(6, task.getCreated_at());
+            statement.setString(7, task.getUpdated_at());
+
 
             statement.executeUpdate();
         } catch (SQLIntegrityConstraintViolationException e) {
@@ -38,6 +37,8 @@ public class TaskDAO {
         } catch (SQLException e) {
             System.err.println("Failed inserting task details");
             System.err.println("Error: " + e.getMessage());
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -59,34 +60,31 @@ public class TaskDAO {
                     resultSet.getInt("priority"),
                     resultSet.getString("due_date"),
                     resultSet.getString("created_at"),
-                    resultSet.getString("updated_at"),
-                    resultSet.getInt("user_id")
+                    resultSet.getString("updated_at")
             );
 
             allTasks.add(task);
             }
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             System.err.println("There was a problem getting task details: \n" + e.getMessage());
         }
         return allTasks;
     }
 
     // Update task information in the database
-    public void updateTaskDetails(int id, String title, String description, String status, String priority, String due_date, String created_at, String update_at, int user_id) {
-        String sql = "UPDATE tasks SET title = ?, description = ?, status = ?, priority, due_date = ?, created_at = ?, updated_at = ? WHERE user_id = ?";
+    public void updateTaskDetails(String title, String description, String status, int priority, String due_date, String update_at, int id) {
+        String sql = "UPDATE tasks SET title = ?, description = ?, status = ?, priority = ?, due_date = ?, updated_at = ? WHERE id = ?";
 
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)
         ) {
-            statement.setInt(1, id);
-            statement.setString(2, title);
-            statement.setString(3, description);
-            statement.setString(4, status);
-            statement.setString(5, priority);
-            statement.setString(6, due_date);
-            statement.setString(7, created_at);
-            statement.setString(8, update_at);
-            statement.setInt(9, user_id);
+            statement.setInt(7, id);
+            statement.setString(1, title);
+            statement.setString(2, description);
+            statement.setString(3, status);
+            statement.setInt(4, priority);
+            statement.setString(5, due_date);
+            statement.setString(6, update_at);
 
             int rowsUpdated = statement.executeUpdate();
             if (rowsUpdated > 0) {
@@ -94,7 +92,7 @@ public class TaskDAO {
             } else {
                 System.out.println("No task with ID found");
             }
-        } catch(SQLException e) {
+        } catch(SQLException | ClassNotFoundException e) {
             System.err.println("Failed to update task: \n" + e.getMessage());
         }
     }
@@ -109,7 +107,7 @@ public class TaskDAO {
             statement.setInt(1, taskID);
             statement.executeUpdate();
             System.out.println("Successfully deleted task");
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             System.out.println("There was a problem deleting the task: \n" + e.getMessage());
         }
     }

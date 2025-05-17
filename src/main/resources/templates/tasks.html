@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Task List</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2rem; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { padding: 10px; border: 1px solid #ccc; text-align: left; }
+        th { background-color: #f2f2f2; }
+        h2 { margin-bottom: 0.5rem; }
+        a.button { text-decoration: none; background: #28a745; color: white; padding: 8px 12px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+<h2>Task List</h2>
+<a class="button" th:href="@{/tasks/new}">+ Add New Task</a>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Status</th>
+        <th>Priority</th>
+        <th>Due Date</th>
+        <th>Created</th>
+        <th>Updated</th>
+        <th>Delete</th>
+        <th>Edit</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="task : ${tasks}">
+        <td th:text="${task.id}">1</td>
+        <td th:text="${task.title}">Title</td>
+        <td th:text="${task.description}">Description</td>
+        <td th:text="${task.status}">Pending</td>
+        <td th:text="${task.priority}">2</td>
+        <td th:text="${task.dueDate}">2025-05-20</td>
+        <td th:text="${task.created_at}">2025-05-01</td>
+        <td th:text="${task.updated_at}">2025-05-02</td>
+        <td><a th:href="@{/tasks/delete/{id}(id=${task.id})}" onclick="return confirm(Confirm Delete? );" class="btn-delete">Delete</a></td>
+        <td><a th:href="@{/tasks/edit/{id}(id=${task.id})}" class="btn-edit">Edit</a></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
